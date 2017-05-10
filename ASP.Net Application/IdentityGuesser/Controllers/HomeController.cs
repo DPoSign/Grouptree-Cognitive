@@ -1,22 +1,19 @@
 ﻿using System.Web.Mvc;
-using System.Diagnostics;
 using fw8.CognitiveServices;
 using System.IO;
 using System.Web;
 using fw8.CognitiveServices.Tags;
-using System;
 
 namespace IdentityGuesser.Controllers
 {
     public class HomeController : Controller
     {
-        //Displaying two pages
         public ActionResult Index()
         {
             return View();
         }
-        
-        //Getting images from an URL
+
+        //Getting URL
         [HttpPost]
         public ActionResult ImagefromLink(PoemModel model)
         {
@@ -28,7 +25,7 @@ namespace IdentityGuesser.Controllers
             }
             return View("Index");
         }
-        //Getting image from an upload
+        //Getting Path
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase file)
         {
@@ -43,19 +40,21 @@ namespace IdentityGuesser.Controllers
             return View("Index");
             //TESTING
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //Getting Path
+        [HttpPost]
+        public ActionResult GetImageThumbnail(HttpPostedFileBase file)
+        {
+            if (file != null && file.ContentLength > 0)
+            {
+                Manager instance = new Manager();
+                var fileName = Path.GetFileName(file.FileName);
+                var path = Path.Combine(Server.MapPath("~/Images"), fileName);
+                file.SaveAs(path);
+                instance.ThumbnailTask(path);
+                //ByteArrayToImage(image);
+            }
+            return View("Index");
+            //TESTING
+        }
     }
 }

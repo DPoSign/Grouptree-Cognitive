@@ -9,14 +9,19 @@ namespace fw8.CognitiveServices
 {
     public class Manager
     {
+        //TODO: Every modules (analyzing, ocr, thumbnail are throwing exceptions when path or url are null)
 
         public void ProcessingImage(string pathorurl)
         {
             Manager instance = new Manager();
             var client = instance.StartMyTask(pathorurl);
-            //var ocr = instance.OCRTask(pathorurl);
+            var ocr = instance.OCRTask(pathorurl);
+            var thumbnail = instance.ThumbnailTask(pathorurl);
+
+            Debug.WriteLine("Thumbnail: " + thumbnail);
             Debug.WriteLine("Caption: " + client.Description.Captions[0].Text);
 
+            //Uncomment if you want OCR, will throw exception if the image does not have texts
             //foreach (var a in ocr.Regions[0].Lines)
             //{
             //    foreach (var b in a.Words)
@@ -37,6 +42,7 @@ namespace fw8.CognitiveServices
             }
         }
 
+        //Analyze an Image With Computer Vision
         public AnalysisResult StartMyTask(string path)
         {
             Debug.WriteLine("Task started");
@@ -72,6 +78,7 @@ namespace fw8.CognitiveServices
             }
         }
 
+        //OCR with Computer Vision
         public OcrResults OCRTask(string path)
         {
             return AnalyzeImageForText(path);
@@ -86,8 +93,29 @@ namespace fw8.CognitiveServices
             VisionServiceClient VisionServiceClient = new VisionServiceClient(SubscriptionKey);
             using (Stream imageFileStream = File.OpenRead(imageFilePath))
             {
-                OcrResults ocrResult =  VisionServiceClient.RecognizeTextAsync(imageFileStream, language).Result;
+                OcrResults ocrResult = VisionServiceClient.RecognizeTextAsync(imageFileStream, language).Result;
                 return ocrResult;
+            }
+        }
+
+        //Thumbnail with Computer Vision
+        public byte[] ThumbnailTask(string path)
+        {
+            return GetThumbnail(path);
+        }
+
+        private static byte[] GetThumbnail(string imageFilePath)
+        {
+
+
+            string SubscriptionKey = ConfigurationManager.AppSettings["SubscriptionKey"].ToString();
+            Debug.WriteLine("Thumbnail started " + imageFilePath + "Subscription key " + SubscriptionKey);
+            VisionServiceClient VisionServiceClient = new VisionServiceClient(SubscriptionKey);
+            using (Stream imageFileStream = File.OpenRead(imageFilePath))
+            {
+                byte[] thumbnail = VisionServiceClient.GetThumbnailAsync(imageFileStream, 200, 200, true).Result;
+                Debug.WriteLine("Thumbnail byte:" + thumbnail);
+                return thumbnail;
             }
         }
     }
