@@ -1,0 +1,44 @@
+﻿@using IdentityGuesser.Models;
+@model IdentityGuesser.Models.PoemModel
+@{
+    ViewBag.Title = "Home Page";
+}
+<div class="jumbotron">
+    <h1>Grouptree Cognitive Service</h1>
+    <p class="lead">
+        We are integrating Microsoft Cognitive into framework8's DAM proposition.<br />
+        Get the most out from your data
+    </p>
+    <div class="row">
+        <div class="col-sm-8">
+            @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <input type="file" name="file" id="upload" style="display: none" onchange="$('#submit').click();" />
+                <input type="button" value="Upload a Photo" class="btn btn-primary btn-lg" onclick="$('#upload').click();" />
+                <input type="submit" id="submit" style="display: none" />
+            }
+        </div>
+        <div class="col-sm-8">
+            @using (Html.BeginForm("ImagefromLink", "Home", FormMethod.Post))
+            {
+                @Html.TextBoxFor(model => model.Link)
+                @Html.ValidationMessageFor(model => model.Link)
+                <button type="submit">Send link</button>
+            }
+        </div>
+    </div>
+</div>
+<hr />
+<div class="container col-sm-12" style="padding-top: 24px">
+    <div class="col-sm-4 text-center">
+        <img src="@ViewBag.ImagePath" width="196" />
+    </div>
+    <div class="col-sm-8">
+        <p>
+            @ViewBag.Caption <br />
+            @ViewBag.Tags <br />
+            @ViewBag.Age <br />
+            @ViewBag.Gender <br />
+        </p>
+    </div>
+</div>
